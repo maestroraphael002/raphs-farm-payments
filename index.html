@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raph's Farm Payment</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 25px;
+      background: #f2f7f2;
+    }
+    .box {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+    }
+    h1 {
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    button {
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #status {
+      margin-top: 15px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h1>Raph's Farm</h1>
+  <p>Enter customer details to request M-PESA payment.</p>
+
+  <input id="phone" type="tel" placeholder="M-PESA number (e.g. 0712345678)">
+  <input id="amount" type="number" placeholder="Amount (KSh)">
+
+  <button onclick="pay()">PAY NOW</button>
+
+  <div id="status"></div>
+</div>
+
+<script>
+async function pay() {
+  const phone = document.getElementById("phone").value;
+  const amount = document.getElementById("amount").value;
+  const status = document.getElementById("status");
+
+  if (!phone || !amount) {
+    status.textContent = "Please enter the phone number and amount.";
+    return;
+  }
+
+  status.textContent = "Sending payment request...";
+
+  try {
+    const response = await fetch("/api/stkpush", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ phone, amount })
+    });
+
+    const data = await response.json();
+
+    status.textContent = data.message || "Request sent.";
+  } catch (error) {
+    status.textContent = "Unable to connect to payment server.";
+  }
+}
+</script>
+
+</body>
+</html>
